@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión - Coffee Shop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">☕ Coffee Shop</h1>
+  </header>
+  <main class="form-container">
+    <h2>Inicia Sesión</h2>
+    <form id="login-form">
+      <label for="role">Selecciona tu rol:</label>
+      <select id="role" required>
+        <option value="">Seleccione</option>
+        <option value="estudiante">Estudiante</option>
+        <option value="vendedor">Vendedor</option>
+      </select>
+      <div id="student-fields" class="hidden">
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" placeholder="Ingresa tu matrícula">
+        <label for="student-password">Contraseña:</label>
+        <input type="password" id="student-password" placeholder="Contraseña">
+      </div>
+      <div id="vendor-fields" class="hidden">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" placeholder="Nombre de usuario">
+        <label for="vendor-password">Contraseña:</label>
+        <input type="password" id="vendor-password" placeholder="Contraseña">
+      </div>
+      <button type="submit" class="primary-button">Ingresar</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="register.html">Crea una aquí</a></p>
+  </main>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfYwCRHz-kihRV8p2Sa_IAwR7Iho2RV2I",
+      authDomain: "cafeshop-3672d.firebaseapp.com",
+      projectId: "cafeshop-3672d",
+      storageBucket: "cafeshop-3672d.appspot.com",
+      messagingSenderId: "469499271309",
+      appId: "1:469499271309:web:9e450339d546d68d2eaac4",
+      measurementId: "G-TG0MR2GCW9",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Alternar campos según el rol seleccionado
+    const roleSelector = document.getElementById("role");
+    const studentFields = document.getElementById("student-fields");
+    const vendorFields = document.getElementById("vendor-fields");
+
+    roleSelector.addEventListener("change", () => {
+      const selectedRole = roleSelector.value;
+
+      if (selectedRole === "estudiante") {
+        studentFields.classList.remove("hidden");
+        vendorFields.classList.add("hidden");
+      } else if (selectedRole === "vendedor") {
+        vendorFields.classList.remove("hidden");
+        studentFields.classList.add("hidden");
+      } else {
+        studentFields.classList.add("hidden");
+        vendorFields.classList.add("hidden");
+      }
+    });
+
+    // Manejar el inicio de sesión
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const role = roleSelector.value;
+
+      if (role === "estudiante") {
+        const matricula = document.getElementById("matricula").value.trim();
+        const password = document.getElementById("student-password").value.trim();
+
+        if (!matricula || !password) {
+          alert("Por favor, llena todos los campos.");
+          return;
+        }
+
+        // Verificar datos del estudiante en Firestore
+        const studentQuery = query(
+          collection(db, "users"),
+          where("role", "==", "estudiante"),
+          where("matricula", "==", matricula),
+          where("password", "==", password)
+        );
+
+        const querySnapshot = await getDocs(studentQuery);
+        if (!querySnapshot.empty) {
+          alert("Inicio de sesión exitoso como estudiante.");
+          window.location.href = "menu.html";
+        } else {
+          alert("Matrícula o contraseña incorrecta.");
+        }
+      } else if (role === "vendedor") {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("vendor-password").value.trim();
+
+        if (!username || !password) {
+          alert("Por favor, llena todos los campos.");
+          return;
+        }
+
+        // Verificar datos del vendedor en Firestore
+        const vendorQuery = query(
+          collection(db, "users"),
+          where("role", "==", "vendedor"),
+          where("username", "==", username),
+          where("password", "==", password)
+        );
+
+        const querySnapshot = await getDocs(vendorQuery);
+        if (!querySnapshot.empty) {
+          alert("Inicio de sesión exitoso como vendedor.");
+          window.location.href = "vendor.html";
+        } else {
+          alert("Usuario o contraseña incorrecta.");
+        }
+      } else {
+        alert("Por favor, selecciona un rol.");
+      }
+    });
+  </script>
+</body>
+</html>

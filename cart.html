@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito - Coffee Shop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .cart-item img {
+      max-width: 50px;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">☕ Coffee Shop</h1>
+  </header>
+  <main class="cart-container">
+    <h2>Carrito</h2>
+    <ul id="cart-items">
+      <!-- Productos cargados dinámicamente -->
+    </ul>
+    <button onclick="checkout()" class="primary-button">Finalizar Compra</button>
+    <button onclick="navigateToMenu()" class="secondary-button">Seguir Comprando</button>
+  </main>
+  <script type="module" src="cart.js"></script>
+</body>
+</html>
